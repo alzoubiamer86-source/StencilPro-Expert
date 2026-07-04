@@ -1,0 +1,54 @@
+-- =============================================================================
+-- StencilPro Expert Enterprise
+-- Module DB-001: Core System & User Management
+-- File: DB001_README.sql
+-- =============================================================================
+-- EXECUTION ORDER
+-- Run each file against your Supabase PostgreSQL instance in this exact order.
+-- All files are idempotent (safe to re-run).
+--
+-- 1. DB001_Core_System.sql   — Tables, extensions, fn_set_updated_at()
+-- 2. DB001_Functions.sql     — Helper functions, created_by triggers
+-- 3. DB001_Indexes.sql       — All indexes (run after tables exist)
+-- 4. DB001_Triggers.sql      — Audit, protection, and business-rule triggers
+-- 5. DB001_RLS.sql           — Row Level Security enable + all policies
+-- 6. DB001_Seed.sql          — System roles, permissions, config, feature flags
+--
+-- SUPABASE DASHBOARD:
+--   SQL Editor → New Query → paste each file → Run
+--
+-- PSQL CLI:
+--   psql "$DATABASE_URL" -f DB001_Core_System.sql
+--   psql "$DATABASE_URL" -f DB001_Functions.sql
+--   psql "$DATABASE_URL" -f DB001_Indexes.sql
+--   psql "$DATABASE_URL" -f DB001_Triggers.sql
+--   psql "$DATABASE_URL" -f DB001_RLS.sql
+--   psql "$DATABASE_URL" -f DB001_Seed.sql
+--
+-- NOTES:
+--   • All files run inside BEGIN/COMMIT transactions.
+--   • audit_log and activity_log are PARTITIONED tables.
+--     Partitions for -1, 0, +1, +2 months from NOW() are created automatically.
+--   • The service role key is required for DB setup.
+--     Regular anon key cannot create tables or extensions.
+--   • After running DB001_Seed.sql, the schema_migrations table
+--     will contain entry: 0001_db001_core_system
+--
+-- POST-INSTALL VERIFICATION:
+--   SELECT table_name FROM information_schema.tables
+--   WHERE table_schema = 'public'
+--   ORDER BY table_name;
+--   -- Expected: 15 tables in public schema
+--
+--   SELECT code FROM roles ORDER BY code;
+--   -- Expected: admin, engineer, senior_engineer, super_admin, viewer
+--
+--   SELECT COUNT(*) FROM permissions;
+--   -- Expected: 40 rows
+--
+--   SELECT COUNT(*) FROM role_permissions;
+--   -- Expected: approximately 130+ rows (all role-permission mappings)
+--
+--   SELECT version_num FROM schema_migrations;
+--   -- Expected: 0001_db001_core_system
+-- =============================================================================
